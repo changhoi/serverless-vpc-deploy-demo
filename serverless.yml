@@ -40,7 +40,7 @@ provider:
   region: ap-northeast-2
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
-  environment: ${file(secrets.yml)}
+  environment: ${file(env.yml)}
   iamRoleStatements:
     - Effect: Allow
       Action: s3:ListBucket
@@ -51,6 +51,13 @@ provider:
       Action: dynamodb:Scan
       Resource:
         - "arn:aws:dynamodb:ap-northeast-2:*:table/vpc-demo-table"
+
+  vpc:
+    subnetIds:
+      - ${file(env.yml):SBNID1}
+      - ${file(env.yml):SBNID2}
+    securityGroupIds:
+      - ${file(env.yml):SCGID1}
 
 functions:
   hello:
