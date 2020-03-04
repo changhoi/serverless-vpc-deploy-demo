@@ -13,14 +13,44 @@ custom:
 plugins:
   - serverless-webpack
 
+resources:
+  Resources:
+    demoBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: vpc-demo-bucket
+
+    demoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: vpc-demo-table
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
 provider:
   name: aws
   runtime: nodejs12.x
   region: ap-northeast-2
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
-  environment:
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  environment: ${file(secrets.yml)}
+  iamRoleStatements:
+    - Effect: Allow
+      Action: s3:ListBucket
+      Resource:
+        - "arn:aws:s3:::vpc-demo-bucket"
+
+    - Effect: Allow
+      Action: dynamodb:Scan
+      Resource:
+        - "arn:aws:dynamodb:ap-northeast-2:*:table/vpc-demo-table"
 
 functions:
   hello:
