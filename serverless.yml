@@ -40,7 +40,8 @@ provider:
   region: ap-northeast-2
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
-  environment: ${file(env.yml)}
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
   iamRoleStatements:
     - Effect: Allow
       Action: s3:ListBucket
